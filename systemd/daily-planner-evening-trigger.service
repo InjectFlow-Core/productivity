@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily Planner - end-of-day review
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/daily-planner --mode=evening
+Environment=DISPLAY=:0
+Restart=no

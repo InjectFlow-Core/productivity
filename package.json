@@ -1,0 +1,19 @@
+{
+  "name": "daily-planner",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "frontend:dev": "vite --host 127.0.0.1",
+    "frontend:build": "vite build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "vite": "^5.4.21"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "marked": "^18.0.3"
+  }
+}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Planner - end-of-day review trigger
+
+[Timer]
+# Edit OnCalendar to your end-of-work time (24h format, local time)
+OnCalendar=*-*-* 18:00:00
+Unit=daily-planner-evening-trigger.service
+
+[Install]
+WantedBy=timers.target

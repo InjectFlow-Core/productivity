@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily Planner - scheduled launch
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/daily-planner
+Environment=DISPLAY=:0
+Restart=no

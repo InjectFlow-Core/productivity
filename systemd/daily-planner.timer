@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Planner - trigger at configured wake time
+
+[Timer]
+# Edit OnCalendar to your wake-up time (24h format, local time)
+OnCalendar=*-*-* 05:00:00
+Persistent=true
+Unit=daily-planner-timer.service
+
+[Install]
+WantedBy=timers.target

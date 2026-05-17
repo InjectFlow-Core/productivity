@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Planner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Morning lock ── -->
+  <div id="morning-lock" class="view" hidden>
+    <div class="container">
+      <header>
+        <div id="clock" class="clock"></div>
+        <div id="date" class="date"></div>
+      </header>
+      <main>
+        <h1 class="headline">Plan today</h1>
+        <p class="subline">Add what you need to do. Put the most important work first.</p>
+        <form id="morning-form" novalidate>
+          <div class="field">
+            <label>Tasks <span class="req">*</span></label>
+            <div class="cat-picker" id="cat-picker">
+              <button type="button" class="cat-pill active" data-cat="personal">Personal</button>
+              <button type="button" class="cat-pill" data-cat="work">9-5</button>
+              <button type="button" class="cat-pill" data-cat="freelance">Freelance</button>
+              <button type="button" class="cat-pill" data-cat="community">Community</button>
+            </div>
+            <div class="task-entry">
+              <input type="text" id="task-input" placeholder="Add a task and press Enter" autofocus />
+              <button type="button" id="add-task-btn" aria-label="Add task">+</button>
+            </div>
+            <div id="task-groups" class="task-groups" hidden></div>
+          </div>
+          <div class="field">
+            <label for="intention">What would make today successful? <span class="opt">(optional)</span></label>
+            <textarea id="intention" rows="2" placeholder="A short intention for the day..."></textarea>
+          </div>
+          <div class="field">
+            <label for="notes">Notes <span class="opt">(optional)</span></label>
+            <textarea id="notes" rows="3" placeholder="Anything else on your mind..."></textarea>
+          </div>
+          <div id="morning-error" class="error-msg" hidden></div>
+          <button type="submit" id="morning-btn">Start My Day</button>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <!-- ── Evening review lock ── -->
+  <div id="evening-lock" class="view" hidden>
+    <div class="container">
+      <header>
+        <div id="clock-eve" class="clock"></div>
+        <div id="date-eve" class="date"></div>
+      </header>
+      <main>
+        <h1 class="headline">How did the day go?</h1>
+        <p id="evening-intention" class="subline"></p>
+        <form id="evening-form" novalidate>
+          <div class="field">
+            <label>What got done? <span class="opt">(check what you completed)</span></label>
+            <div id="evening-priorities" class="priorities"></div>
+          </div>
+          <div class="field">
+            <label for="review-notes">Reflections <span class="opt">(optional)</span></label>
+            <textarea id="review-notes" rows="3" placeholder="What went well? What didn't? Anything to carry forward..."></textarea>
+          </div>
+          <div id="evening-error" class="error-msg" hidden></div>
+          <button type="submit" id="evening-btn">End My Day</button>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <!-- ── Dashboard ── -->
+  <div id="dashboard" class="view" hidden>
+
+    <!-- Topbar -->
+    <div class="dash-topbar">
+      <span class="dash-title">Daily Planner</span>
+      <div class="topbar-actions">
+        <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
+        <button id="close-btn" class="icon-btn" title="Close (Esc)">✕</button>
+      </div>
+    </div>
+
+    <!-- Dashboard body -->
+    <div class="dash-body">
+
+      <!-- AI review -->
+      <section class="dash-section" id="ai-section">
+        <div class="ai-header">
+          <h2 class="section-label">This week</h2>
+          <button id="ai-btn" class="ai-btn">✦ AI Review</button>
+        </div>
+        <div id="week-stats" class="week-stats"></div>
+        <div id="ai-card" class="ai-card" hidden></div>
+      </section>
+
+      <!-- Today -->
+      <section class="dash-section">
+        <h2 class="section-label">Today</h2>
+        <div id="today-card" class="plan-card today-card"></div>
+      </section>
+
+      <!-- Past plans -->
+      <section class="dash-section" id="history-section" hidden>
+        <h2 class="section-label">Past plans</h2>
+        <div id="history-list" class="history-list"></div>
+      </section>
+
+    </div>
+
+    <!-- Settings overlay -->
+    <div id="settings-overlay" class="settings-overlay" hidden>
+      <div id="settings-panel" class="settings-panel">
+        <div class="settings-header">
+          <span class="settings-title">Settings</span>
+          <button id="settings-close" class="icon-btn">✕</button>
+        </div>
+        <div class="settings-body">
+
+          <div class="settings-group">
+            <div class="settings-group-label">Schedule</div>
+            <div class="setting-row">
+              <label for="morning-time">Morning lock</label>
+              <input type="time" id="morning-time" />
+            </div>
+            <div class="setting-row">
+              <label for="evening-time">Evening review</label>
+              <input type="time" id="evening-time" />
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-label">AI Review</div>
+            <div class="setting-row col">
+              <label for="api-key">Claude API key</label>
+              <div class="key-input-wrap">
+                <input type="password" id="api-key" placeholder="sk-ant-api03-…" autocomplete="off" />
+                <button type="button" id="toggle-key" class="toggle-key-btn" aria-label="Show/hide key">👁</button>
+              </div>
+            </div>
+            <p class="settings-hint">Stored locally in config.json. Only sent to api.anthropic.com.</p>
+          </div>
+
+          <div id="settings-feedback" class="settings-feedback" hidden></div>
+          <button id="save-settings-btn" class="save-btn">Save</button>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="main.js" type="module"></script>
+</body>
+</html>
