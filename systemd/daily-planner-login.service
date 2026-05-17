@@ -6,7 +6,6 @@ PartOf=graphical-session.target
 [Service]
 Type=simple
 ExecStart=%h/.local/bin/daily-planner
-Environment=DISPLAY=:0
 Restart=no
 # Give the desktop session a moment to settle
 ExecStartPre=/bin/sleep 3

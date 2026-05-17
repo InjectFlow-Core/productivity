@@ -45,6 +45,9 @@ cp systemd/daily-planner-evening.timer        "$SYSTEMD_DIR/"
 cp systemd/daily-planner-evening-trigger.service "$SYSTEMD_DIR/"
 
 echo "==> Enabling services"
+systemctl --user import-environment \
+  DISPLAY WAYLAND_DISPLAY XAUTHORITY \
+  XDG_CURRENT_DESKTOP XDG_SESSION_TYPE DBUS_SESSION_BUS_ADDRESS || true
 systemctl --user daemon-reload
 systemctl --user enable --now daily-planner-login.service
 systemctl --user enable --now daily-planner.timer

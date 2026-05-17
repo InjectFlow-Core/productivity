@@ -13,13 +13,7 @@
       {
         "title": "Daily Planner",
         "fullscreen": true,
-        "decorations": false,
-        "alwaysOnTop": true,
-        "resizable": false,
-        "closable": false,
-        "minimizable": false,
-        "maximizable": false,
-        "skipTaskbar": true
+        "center": true
       }
     ],
     "security": {

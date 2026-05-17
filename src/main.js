@@ -45,7 +45,7 @@ function startMorningLock() {
   const taskGroups = document.getElementById('task-groups');
   const submitBtn  = document.getElementById('morning-btn');
 
-  setTimeout(() => taskInput.focus(), 100);
+  taskInput.focus();
 
   // Category picker
   document.getElementById('cat-picker').addEventListener('click', (e) => {
@@ -147,8 +147,7 @@ function startMorningLock() {
 
     try {
       await invoke('submit_plan', { intention, priorities, notes });
-      showView('dashboard');
-      loadDashboard();
+      await invoke('close_app');
     } catch (err2) {
       err.textContent = err2;
       err.hidden = false;
@@ -162,7 +161,7 @@ function startMorningLock() {
 
 function startEveningLock(plan) {
   startClock('clock-eve', 'date-eve');
-  setTimeout(() => document.getElementById('review-notes').focus(), 100);
+  document.getElementById('review-notes').focus();
 
   document.getElementById('evening-intention').textContent = plan.intention || "Review today's priorities.";
 
@@ -213,8 +212,7 @@ function startEveningLock(plan) {
 
     try {
       await invoke('submit_review', { reviewNotes });
-      showView('dashboard');
-      loadDashboard();
+      await invoke('close_app');
     } catch (e) {
       err.textContent = e;
       err.hidden = false;

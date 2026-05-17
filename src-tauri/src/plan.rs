@@ -69,18 +69,6 @@ fn plan_path(date: &str) -> PathBuf {
     plans_dir().join(format!("{}.json", date))
 }
 
-pub fn today_plan_exists() -> bool {
-    today_plan_path().exists()
-}
-
-pub fn today_reviewed() -> bool {
-    fs::read_to_string(today_plan_path())
-        .ok()
-        .and_then(|c| serde_json::from_str::<DayPlan>(&c).ok())
-        .map(|p| p.reviewed_at.is_some())
-        .unwrap_or(false)
-}
-
 pub fn get_today_plan() -> Option<DayPlan> {
     fs::read_to_string(today_plan_path())
         .ok()
