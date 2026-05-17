@@ -212,7 +212,8 @@ function startEveningLock(plan) {
 
     try {
       await invoke('submit_review', { reviewNotes });
-      await invoke('close_app');
+      showView('dashboard');
+      loadDashboard();
     } catch (e) {
       err.textContent = e;
       err.hidden = false;
