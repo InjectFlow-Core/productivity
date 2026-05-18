@@ -4,9 +4,9 @@ A Tauri desktop app for Linux that opens at scheduled times to help you plan you
 
 ## Motivation
 
-My work and schedule have felt scattered lately, so I built a desktop app to force a little structure into my day.
+My work and schedule have felt scattered lately, so I built this app to force a little structure into my day.
 
-The first time I open my laptop to work, the app takes over the screen and requires me to write my plan for the day before I can do anything else.
+The first time I open my laptop to work, the it takes over the screen and requires me to write my plan for the day before I can do anything else.
 
 Once I submit it:
 
@@ -15,10 +15,7 @@ Once I submit it:
 - The next morning, unfinished tasks from the previous day show up as suggestions for the new day. I can carry them over or ignore them.
 - At the end of the week, an AI reviews everything I worked on and gives me a clear sense of how my week actually went. I can also request that review anytime.
 
-I built it with Rust and Tauri.
-
-It started as a personal tool because I needed something more forceful than a regular to-do app.
-
+It is more of a personal tooI needed something more forceful than a regular to-do app.
 ## How it works
 
 ### Morning form
