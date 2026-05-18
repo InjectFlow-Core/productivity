@@ -34,6 +34,17 @@ Terminal=false
 Categories=Office;ProjectManagement;
 StartupWMClass=daily-planner
 EOF
+cat > "$DESKTOP_DIR/daily-planner-sticky.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Daily Planner Sticky
+Comment=Keep today's tasks visible
+Exec=$BINARY_DEST --sticky
+Icon=$ICON_DEST
+Terminal=false
+Categories=Office;ProjectManagement;
+StartupWMClass=daily-planner
+EOF
 update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
 
 echo "==> Installing systemd units"
@@ -65,3 +76,6 @@ echo "  systemctl --user daemon-reload && systemctl --user restart <timer-name>"
 echo ""
 echo "Open the dashboard anytime:"
 echo "  daily-planner --dashboard"
+echo ""
+echo "Open the sticky task window anytime:"
+echo "  daily-planner --sticky"

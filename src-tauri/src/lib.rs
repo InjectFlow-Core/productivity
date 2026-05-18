@@ -5,13 +5,18 @@ mod plan;
 use chrono::Local;
 use fs2::FileExt;
 use plan::{DayPlan, Priority};
-use tauri::WebviewWindow;
+use tauri::{LogicalSize, PhysicalPosition, WebviewWindow};
 
 // ── App mode ──────────────────────────────────────────────────────────────────
 
 fn detect_mode() -> &'static str {
     let args: Vec<String> = std::env::args().collect();
     if args
+        .iter()
+        .any(|a| a == "--mode=sticky" || a == "--sticky")
+    {
+        "sticky"
+    } else if args
         .iter()
         .any(|a| a == "--mode=evening" || a == "--evening")
     {
@@ -55,6 +60,11 @@ fn get_current_time() -> String {
 #[tauri::command]
 fn get_all_plans() -> Vec<DayPlan> {
     plan::get_all_plans()
+}
+
+#[tauri::command]
+fn get_today_plan() -> Option<DayPlan> {
+    plan::get_today_plan()
 }
 
 #[tauri::command]
@@ -142,6 +152,37 @@ fn check_timers() -> bool {
 }
 
 #[tauri::command]
+fn configure_sticky_window(window: WebviewWindow) -> Result<(), String> {
+    let width = 360.0;
+    let height = 520.0;
+
+    window.set_fullscreen(false).map_err(|e| e.to_string())?;
+    window
+        .set_size(LogicalSize::new(width, height))
+        .map_err(|e| e.to_string())?;
+    window.set_min_size(Some(LogicalSize::new(320.0, 360.0))).ok();
+    window.set_always_on_top(true).ok();
+    if let Ok(Some(monitor)) = window.current_monitor().or_else(|_| window.primary_monitor()) {
+        let work_area = monitor.work_area();
+        let scale = monitor.scale_factor();
+        let margin = (24.0 * scale).round() as i32;
+        let sticky_width = (width * scale).round() as i32;
+        let x = work_area.position.x + work_area.size.width as i32 - sticky_width - margin;
+        let y = work_area.position.y + margin;
+        window.set_position(PhysicalPosition::new(x.max(work_area.position.x), y)).ok();
+    } else {
+        window.center().ok();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+fn configure_dashboard_window(window: WebviewWindow) -> Result<(), String> {
+    window.set_always_on_top(false).ok();
+    window.set_fullscreen(true).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn close_app(window: WebviewWindow) -> Result<(), String> {
     window.close().map_err(|e| e.to_string())
 }
@@ -162,6 +203,7 @@ pub fn run() {
             get_today_date,
             get_current_time,
             get_all_plans,
+            get_today_plan,
             get_carryover_candidates,
             toggle_priority,
             submit_plan,
@@ -170,6 +212,8 @@ pub fn run() {
             save_settings,
             get_ai_review,
             check_timers,
+            configure_sticky_window,
+            configure_dashboard_window,
             close_app,
         ])
         .run(tauri::generate_context!())

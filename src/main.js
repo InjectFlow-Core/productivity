@@ -195,7 +195,9 @@ async function startMorningLock() {
 
     try {
       await invoke('submit_plan', { intention, priorities, notes });
-      await invoke('close_app');
+      await invoke('configure_sticky_window');
+      showView('sticky');
+      startSticky();
     } catch (err2) {
       err.textContent = err2;
       err.hidden = false;
@@ -268,6 +270,88 @@ function startEveningLock(plan) {
       btn.disabled = false;
       btn.textContent = 'End My Day';
     }
+  });
+}
+
+// ── Today sticky ──────────────────────────────────────────────────────────────
+
+function startSticky() {
+  if (startSticky.booted) {
+    loadSticky();
+    return;
+  }
+  startSticky.booted = true;
+
+  document.getElementById('sticky-close-btn').onclick = () => invoke('close_app');
+  document.getElementById('sticky-refresh-btn').onclick = () => loadSticky();
+  document.getElementById('sticky-dashboard-btn').onclick = async () => {
+    await invoke('configure_dashboard_window');
+    showView('dashboard');
+    loadDashboard();
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') invoke('close_app');
+  });
+
+  loadSticky();
+}
+
+async function loadSticky() {
+  const plan = await invoke('get_today_plan');
+  const progress = document.getElementById('sticky-progress');
+  const list = document.getElementById('sticky-list');
+
+  if (!plan) {
+    progress.textContent = 'No plan set';
+    list.innerHTML = `
+      <div class="sticky-empty">
+        <p>No plan for today yet.</p>
+        <button id="sticky-plan-btn" type="button">Plan today</button>
+      </div>`;
+    document.getElementById('sticky-plan-btn').onclick = async () => {
+      await invoke('configure_dashboard_window');
+      showView('morning-lock');
+      await startMorningLock();
+    };
+    return;
+  }
+
+  const done = plan.priorities.filter((task) => task.done).length;
+  const total = plan.priorities.length;
+  progress.textContent = `${done}/${total} done`;
+
+  const grouped = CATS.map(({ id, label }) => ({
+    id, label,
+    items: plan.priorities
+      .map((p, i) => ({ ...p, _i: i }))
+      .filter((p) => (p.category || 'personal') === id),
+  })).filter((g) => g.items.length > 0);
+
+  list.innerHTML = grouped.map(({ id, label, items }) => `
+    <div class="sticky-group">
+      <div class="cat-group-label" data-cat="${id}">${label}</div>
+      ${items.map((task) => `
+        <label class="sticky-task ${task.done ? 'done' : ''}" data-idx="${task._i}">
+          <input type="checkbox" ${task.done ? 'checked' : ''} />
+          <span>${escHtml(task.text)}</span>
+        </label>`).join('')}
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.sticky-task').forEach((row) => {
+    const index = Number(row.dataset.idx);
+    row.querySelector('input').addEventListener('change', async (e) => {
+      e.target.disabled = true;
+      try {
+        await invoke('toggle_priority', { date: plan.date, index });
+        await loadSticky();
+      } catch (err) {
+        e.target.checked = !e.target.checked;
+        e.target.disabled = false;
+        console.error(err);
+      }
+    });
   });
 }
 
@@ -513,7 +597,15 @@ function escHtml(str) {
 try {
   const { mode, today_plan: todayPlan } = await invoke('get_app_state');
 
-  if (mode === 'morning' && !todayPlan) {
+  if (mode === 'sticky') {
+    await invoke('configure_sticky_window');
+    showView('sticky');
+    startSticky();
+  } else if (mode === 'morning' && todayPlan) {
+    await invoke('configure_sticky_window');
+    showView('sticky');
+    startSticky();
+  } else if (mode === 'morning') {
     showView('morning-lock');
     await startMorningLock();
   } else if (mode === 'evening' && todayPlan && !todayPlan.reviewed_at) {
