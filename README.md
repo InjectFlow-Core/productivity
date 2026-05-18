@@ -109,3 +109,7 @@ Config (scheduled times, API key) is stored at:
 ## Platform
 
 Linux. The morning and evening forms open as a standard fullscreen window — no input grabbing or window manager bypass.
+
+## Next feature?
+
+- You should be made to make decisions about your incomplete tasks for the previous day.
