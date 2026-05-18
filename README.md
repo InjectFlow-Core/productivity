@@ -51,7 +51,7 @@ Open a compact always-on-top view of today's tasks with:
 daily-planner --sticky
 ```
 
-The sticky window shows today's completion count and live-toggleable task checkboxes. Close it when you do not need it; reopen it from the **Daily Planner Sticky** launcher or with the command above.
+The sticky window shows today's completion count and live-toggleable task checkboxes. It opens automatically after you submit the morning plan, and the login startup flow opens it when a plan already exists for today. Close it when you do not need it; reopen it from the **Daily Planner Sticky** launcher or with the command above.
 
 ## Development
 

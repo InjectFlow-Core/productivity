@@ -195,7 +195,9 @@ async function startMorningLock() {
 
     try {
       await invoke('submit_plan', { intention, priorities, notes });
-      await invoke('close_app');
+      await invoke('configure_sticky_window');
+      showView('sticky');
+      startSticky();
     } catch (err2) {
       err.textContent = err2;
       err.hidden = false;
@@ -274,6 +276,12 @@ function startEveningLock(plan) {
 // ── Today sticky ──────────────────────────────────────────────────────────────
 
 function startSticky() {
+  if (startSticky.booted) {
+    loadSticky();
+    return;
+  }
+  startSticky.booted = true;
+
   document.getElementById('sticky-close-btn').onclick = () => invoke('close_app');
   document.getElementById('sticky-refresh-btn').onclick = () => loadSticky();
   document.getElementById('sticky-dashboard-btn').onclick = async () => {
@@ -593,7 +601,11 @@ try {
     await invoke('configure_sticky_window');
     showView('sticky');
     startSticky();
-  } else if (mode === 'morning' && !todayPlan) {
+  } else if (mode === 'morning' && todayPlan) {
+    await invoke('configure_sticky_window');
+    showView('sticky');
+    startSticky();
+  } else if (mode === 'morning') {
     showView('morning-lock');
     await startMorningLock();
   } else if (mode === 'evening' && todayPlan && !todayPlan.reviewed_at) {

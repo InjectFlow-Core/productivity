@@ -5,7 +5,7 @@ mod plan;
 use chrono::Local;
 use fs2::FileExt;
 use plan::{DayPlan, Priority};
-use tauri::{LogicalSize, WebviewWindow};
+use tauri::{LogicalSize, PhysicalPosition, WebviewWindow};
 
 // ── App mode ──────────────────────────────────────────────────────────────────
 
@@ -153,13 +153,26 @@ fn check_timers() -> bool {
 
 #[tauri::command]
 fn configure_sticky_window(window: WebviewWindow) -> Result<(), String> {
+    let width = 360.0;
+    let height = 520.0;
+
     window.set_fullscreen(false).map_err(|e| e.to_string())?;
     window
-        .set_size(LogicalSize::new(360.0, 520.0))
+        .set_size(LogicalSize::new(width, height))
         .map_err(|e| e.to_string())?;
     window.set_min_size(Some(LogicalSize::new(320.0, 360.0))).ok();
     window.set_always_on_top(true).ok();
-    window.center().ok();
+    if let Ok(Some(monitor)) = window.current_monitor().or_else(|_| window.primary_monitor()) {
+        let work_area = monitor.work_area();
+        let scale = monitor.scale_factor();
+        let margin = (24.0 * scale).round() as i32;
+        let sticky_width = (width * scale).round() as i32;
+        let x = work_area.position.x + work_area.size.width as i32 - sticky_width - margin;
+        let y = work_area.position.y + margin;
+        window.set_position(PhysicalPosition::new(x.max(work_area.position.x), y)).ok();
+    } else {
+        window.center().ok();
+    }
     Ok(())
 }
 
