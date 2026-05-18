@@ -112,4 +112,4 @@ Linux. The morning and evening forms open as a standard fullscreen window — no
 
 ## Next feature?
 
-- You should be made to make decisions about your incomplete tasks for the previous day.
+- [x] You should be made to make decisions about your incomplete tasks for the previous day.
