@@ -33,19 +33,28 @@ function catMeta(id) {
   return CATS.find((c) => c.id === id) || CATS[0];
 }
 
-function startMorningLock() {
+async function startMorningLock() {
   startClock('clock', 'date');
 
   // tasks = [{ text, category }]
   const tasks = [];
+  const carryovers = [];
   let activeCat = 'personal';
 
   const taskInput  = document.getElementById('task-input');
   const addTaskBtn = document.getElementById('add-task-btn');
+  const carryoverField = document.getElementById('carryover-field');
+  const carryoverList = document.getElementById('carryover-list');
   const taskGroups = document.getElementById('task-groups');
   const submitBtn  = document.getElementById('morning-btn');
 
   taskInput.focus();
+
+  try {
+    carryovers.push(...(await invoke('get_carryover_candidates')).map((task) => ({ ...task, selected: true })));
+  } catch (err) {
+    console.error(err);
+  }
 
   // Category picker
   document.getElementById('cat-picker').addEventListener('click', (e) => {
@@ -55,6 +64,40 @@ function startMorningLock() {
     document.querySelectorAll('.cat-pill').forEach((p) => p.classList.toggle('active', p === pill));
     taskInput.focus();
   });
+
+  function selectedCarryovers() {
+    return carryovers.filter((task) => task.selected);
+  }
+
+  function updateSubmitState() {
+    submitBtn.disabled = tasks.length + selectedCarryovers().length === 0;
+  }
+
+  function renderCarryovers() {
+    carryoverField.hidden = carryovers.length === 0;
+    carryoverList.innerHTML = '';
+
+    carryovers.forEach((task, i) => {
+      const meta = catMeta(task.category);
+      const row = document.createElement('label');
+      row.className = 'carryover-row' + (task.selected ? ' selected' : '');
+      row.innerHTML = `
+        <input type="checkbox" ${task.selected ? 'checked' : ''} />
+        <span class="task-cat-dot" data-cat="${meta.id}"></span>
+        <span class="carryover-text">${escHtml(task.text)}</span>
+        <span class="carryover-cat">${meta.label}</span>`;
+
+      row.querySelector('input').addEventListener('change', (e) => {
+        carryovers[i].selected = e.target.checked;
+        row.classList.toggle('selected', e.target.checked);
+        updateSubmitState();
+      });
+
+      carryoverList.appendChild(row);
+    });
+
+    updateSubmitState();
+  }
 
   function renderTasks() {
     taskGroups.hidden = tasks.length === 0;
@@ -106,7 +149,7 @@ function startMorningLock() {
       taskGroups.appendChild(groupEl);
     });
 
-    submitBtn.disabled = tasks.length === 0;
+    updateSubmitState();
   }
 
   function addTask() {
@@ -122,6 +165,7 @@ function startMorningLock() {
   taskInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); addTask(); }
   });
+  renderCarryovers();
   renderTasks();
 
   document.getElementById('morning-form').addEventListener('submit', async (e) => {
@@ -131,7 +175,8 @@ function startMorningLock() {
     addTask();
 
     err.hidden = true;
-    if (tasks.length === 0) {
+    const selected = selectedCarryovers();
+    if (tasks.length + selected.length === 0) {
       err.textContent = 'Add at least one task for today.';
       err.hidden = false;
       taskInput.focus();
@@ -143,7 +188,10 @@ function startMorningLock() {
 
     const intention = document.getElementById('intention').value;
     const notes     = document.getElementById('notes').value;
-    const priorities = tasks.map(({ text, category }) => ({ text, category, done: false }));
+    const priorities = [
+      ...selected.map(({ text, category, carried_from }) => ({ text, category, carried_from, done: false })),
+      ...tasks.map(({ text, category }) => ({ text, category, done: false })),
+    ];
 
     try {
       await invoke('submit_plan', { intention, priorities, notes });
@@ -401,6 +449,7 @@ function renderCardBody(plan, collapsible) {
       <div class="card-priority ${p.done ? 'done' : ''}" data-idx="${p._i}">
         <input type="checkbox" ${p.done ? 'checked' : ''} />
         <span class="card-priority-text">${escHtml(p.text)}</span>
+        ${p.carried_from ? `<span class="carryover-chip">from ${formatShortDate(p.carried_from)}</span>` : ''}
       </div>`).join('')}
   `).join('');
 
@@ -449,6 +498,12 @@ function formatDate(iso) {
   });
 }
 
+function formatShortDate(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', {
+    weekday: 'short',
+  });
+}
+
 function escHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -460,7 +515,7 @@ try {
 
   if (mode === 'morning' && !todayPlan) {
     showView('morning-lock');
-    startMorningLock();
+    await startMorningLock();
   } else if (mode === 'evening' && todayPlan && !todayPlan.reviewed_at) {
     showView('evening-lock');
     startEveningLock(todayPlan);
