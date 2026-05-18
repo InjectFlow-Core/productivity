@@ -11,9 +11,15 @@ use tauri::WebviewWindow;
 
 fn detect_mode() -> &'static str {
     let args: Vec<String> = std::env::args().collect();
-    if args.iter().any(|a| a == "--mode=evening" || a == "--evening") {
+    if args
+        .iter()
+        .any(|a| a == "--mode=evening" || a == "--evening")
+    {
         "evening"
-    } else if args.iter().any(|a| a == "--mode=dashboard" || a == "--dashboard") {
+    } else if args
+        .iter()
+        .any(|a| a == "--mode=dashboard" || a == "--dashboard")
+    {
         "dashboard"
     } else {
         "morning"
@@ -52,20 +58,26 @@ fn get_all_plans() -> Vec<DayPlan> {
 }
 
 #[tauri::command]
+fn get_carryover_candidates() -> Vec<Priority> {
+    plan::get_yesterday_unfinished_priorities()
+}
+
+#[tauri::command]
 fn toggle_priority(date: String, index: usize) -> Result<DayPlan, String> {
     plan::toggle_priority(&date, index)
 }
 
 #[tauri::command]
-fn submit_plan(
-    intention: String,
-    priorities: Vec<Priority>,
-    notes: String,
-) -> Result<(), String> {
+fn submit_plan(intention: String, priorities: Vec<Priority>, notes: String) -> Result<(), String> {
     let non_empty: Vec<Priority> = priorities
         .into_iter()
         .filter(|p| !p.text.trim().is_empty())
-        .map(|p| Priority { text: p.text.trim().to_string(), done: false, category: p.category })
+        .map(|p| Priority {
+            text: p.text.trim().to_string(),
+            done: false,
+            category: p.category,
+            carried_from: p.carried_from,
+        })
         .collect();
 
     if non_empty.is_empty() {
@@ -150,6 +162,7 @@ pub fn run() {
             get_today_date,
             get_current_time,
             get_all_plans,
+            get_carryover_candidates,
             toggle_priority,
             submit_plan,
             submit_review,

@@ -1,4 +1,4 @@
-use chrono::Local;
+use chrono::{Duration, Local};
 use serde::{Deserialize, Deserializer, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -14,9 +14,11 @@ pub struct Priority {
     pub done: bool,
     #[serde(default = "default_category")]
     pub category: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub carried_from: Option<String>,
 }
 
-// Handles: old string "Buy milk", legacy object {text,done}, new object {text,done,category}
+// Handles: old string "Buy milk", legacy object {text,done}, current object shape.
 impl<'de> Deserialize<'de> for Priority {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
         #[derive(Deserialize)]
@@ -29,11 +31,28 @@ impl<'de> Deserialize<'de> for Priority {
                 done: bool,
                 #[serde(default = "default_category")]
                 category: String,
+                #[serde(default)]
+                carried_from: Option<String>,
             },
         }
         match Raw::deserialize(d)? {
-            Raw::Text(t) => Ok(Priority { text: t, done: false, category: default_category() }),
-            Raw::Object { text, done, category } => Ok(Priority { text, done, category }),
+            Raw::Text(t) => Ok(Priority {
+                text: t,
+                done: false,
+                category: default_category(),
+                carried_from: None,
+            }),
+            Raw::Object {
+                text,
+                done,
+                category,
+                carried_from,
+            } => Ok(Priority {
+                text,
+                done,
+                category,
+                carried_from,
+            }),
         }
     }
 }
@@ -73,6 +92,39 @@ pub fn get_today_plan() -> Option<DayPlan> {
     fs::read_to_string(today_plan_path())
         .ok()
         .and_then(|c| serde_json::from_str(&c).ok())
+}
+
+#[cfg(test)]
+fn today_plan_exists() -> bool {
+    today_plan_path().exists()
+}
+
+#[cfg(test)]
+fn today_reviewed() -> bool {
+    get_today_plan().is_some_and(|plan| plan.reviewed_at.is_some())
+}
+
+pub fn get_yesterday_unfinished_priorities() -> Vec<Priority> {
+    let yesterday = Local::now().date_naive() - Duration::days(1);
+    let yesterday = yesterday.format("%Y-%m-%d").to_string();
+    let path = plan_path(&yesterday);
+
+    fs::read_to_string(&path)
+        .ok()
+        .and_then(|c| serde_json::from_str::<DayPlan>(&c).ok())
+        .map(|plan| {
+            plan.priorities
+                .into_iter()
+                .filter(|p| !p.done)
+                .map(|p| Priority {
+                    text: p.text,
+                    done: false,
+                    category: p.category,
+                    carried_from: Some(yesterday.clone()),
+                })
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 pub fn get_week_plans() -> Vec<DayPlan> {
@@ -175,7 +227,10 @@ mod tests {
             fs::create_dir_all(&path).expect("test home should be created");
             let original_home = std::env::var("HOME").ok();
             std::env::set_var("HOME", &path);
-            Self { original_home, path }
+            Self {
+                original_home,
+                path,
+            }
         }
     }
 
@@ -197,6 +252,7 @@ mod tests {
                 text: "First".to_string(),
                 done: false,
                 category: "personal".to_string(),
+                carried_from: None,
             }],
             notes: String::new(),
             created_at: "2026-05-16T08:00:00+01:00".to_string(),
@@ -223,8 +279,18 @@ mod tests {
             date: Local::now().format("%Y-%m-%d").to_string(),
             intention: "Focus on the important work".to_string(),
             priorities: vec![
-                Priority { text: "Plan the day".to_string(), done: false, category: "personal".to_string() },
-                Priority { text: "Ship the fix".to_string(), done: false, category: "work".to_string() },
+                Priority {
+                    text: "Plan the day".to_string(),
+                    done: false,
+                    category: "personal".to_string(),
+                    carried_from: None,
+                },
+                Priority {
+                    text: "Ship the fix".to_string(),
+                    done: false,
+                    category: "work".to_string(),
+                    carried_from: None,
+                },
             ],
             notes: "Keep it simple".to_string(),
             created_at: "2026-05-16T08:30:00+01:00".to_string(),
@@ -260,6 +326,7 @@ mod tests {
                 text: "Plan the day".to_string(),
                 done: false,
                 category: "personal".to_string(),
+                carried_from: None,
             }
         );
         assert_eq!(
@@ -268,6 +335,25 @@ mod tests {
                 text: "Ship".to_string(),
                 done: true,
                 category: "personal".to_string(),
+                carried_from: None,
+            }
+        );
+    }
+
+    #[test]
+    fn priority_deserializes_carried_from() {
+        let priority: Priority = serde_json::from_str(
+            r#"{"text":"Ship","done":false,"category":"work","carried_from":"2026-05-17"}"#,
+        )
+        .expect("priority with carry-over metadata should parse");
+
+        assert_eq!(
+            priority,
+            Priority {
+                text: "Ship".to_string(),
+                done: false,
+                category: "work".to_string(),
+                carried_from: Some("2026-05-17".to_string()),
             }
         );
     }
@@ -285,6 +371,44 @@ mod tests {
 
         assert_eq!(saved.date, today);
         assert_eq!(saved.intention, "Read today's plan");
+    }
+
+    #[test]
+    fn get_yesterday_unfinished_priorities_marks_carryovers() {
+        let _guard = HOME_LOCK.lock().expect("home lock should not be poisoned");
+        let _home = TestHome::install();
+
+        let yesterday = (Local::now().date_naive() - Duration::days(1))
+            .format("%Y-%m-%d")
+            .to_string();
+        let mut plan = plan_for_date(&yesterday, "Yesterday");
+        plan.priorities = vec![
+            Priority {
+                text: "Done already".to_string(),
+                done: true,
+                category: "work".to_string(),
+                carried_from: None,
+            },
+            Priority {
+                text: "Carry this".to_string(),
+                done: false,
+                category: "freelance".to_string(),
+                carried_from: None,
+            },
+        ];
+        write_plan_file(&format!("{yesterday}.json"), &plan);
+
+        let carryovers = get_yesterday_unfinished_priorities();
+
+        assert_eq!(
+            carryovers,
+            vec![Priority {
+                text: "Carry this".to_string(),
+                done: false,
+                category: "freelance".to_string(),
+                carried_from: Some(yesterday),
+            }]
+        );
     }
 
     #[test]
@@ -337,7 +461,12 @@ mod tests {
         let plan = DayPlan {
             date: date.clone(),
             intention: "Test".to_string(),
-            priorities: vec![Priority { text: "First".to_string(), done: false, category: "personal".to_string() }],
+            priorities: vec![Priority {
+                text: "First".to_string(),
+                done: false,
+                category: "personal".to_string(),
+                carried_from: None,
+            }],
             notes: String::new(),
             created_at: "2026-05-16T08:00:00+01:00".to_string(),
             reviewed_at: None,

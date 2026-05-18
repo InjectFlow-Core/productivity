@@ -19,6 +19,11 @@
         <h1 class="headline">Plan today</h1>
         <p class="subline">Add what you need to do. Put the most important work first.</p>
         <form id="morning-form" novalidate>
+          <div id="carryover-field" class="field carryover-field" hidden>
+            <label>Carried over from yesterday <span class="opt">(selected items move into today)</span></label>
+            <p class="field-hint">Uncheck anything you do not want copied into today.</p>
+            <div id="carryover-list" class="carryover-list"></div>
+          </div>
           <div class="field">
             <label>Tasks <span class="req">*</span></label>
             <div class="cat-picker" id="cat-picker">
