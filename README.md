@@ -43,6 +43,16 @@ Shows:
 
 If the systemd timers are not installed, a banner appears at the top of the dashboard with a reminder to run `install.sh`.
 
+### Sticky tasks
+
+Open a compact always-on-top view of today's tasks with:
+
+```bash
+daily-planner --sticky
+```
+
+The sticky window shows today's completion count and live-toggleable task checkboxes. Close it when you do not need it; reopen it from the **Daily Planner Sticky** launcher or with the command above.
+
 ## Development
 
 Install dependencies:
