@@ -121,6 +121,9 @@ jobs:
           # Export public key for users
           gpg --armor --export "$GPG_KEY_ID" > KEY.gpg
 
+          # Disable Jekyll so GitHub Pages serves raw files
+          touch .nojekyll
+
           # Commit and push
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Adds the daily-planner apt repository (hosted on GitHub Pages) and installs the package.
-# Usage: curl -fsSL https://raw.githubusercontent.com/InjectFlow-Core/daily-planner/master/apt-install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/InjectFlow-Core/productivity/master/apt-install.sh | bash
 set -e
 
-REPO_URL="https://InjectFlow-Core.github.io/daily-planner"
+REPO_URL="https://InjectFlow-Core.github.io/productivity"
 
 echo "==> Adding daily-planner apt repository..."
 curl -fsSL "${REPO_URL}/KEY.gpg" \

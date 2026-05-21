@@ -96,6 +96,18 @@ src-tauri/target/release/daily-planner
 ## Install
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/InjectFlow-Core/productivity/master/apt-install.sh | bash
+```
+
+This adds the apt repository and installs the package. Future updates arrive via:
+
+```bash
+sudo apt upgrade
+```
+
+### Manual install (from source)
+
+```bash
 ./install.sh
 ```
 
