@@ -72,6 +72,7 @@ jobs:
       - name: Build and push apt repository to gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           APT_DIR="$(pwd)/apt-repo"
 
@@ -110,10 +111,12 @@ jobs:
           CONF
           apt-ftparchive -c /tmp/apt.conf release . > Release
 
-          gpg --batch --yes --pinentry-mode loopback -abs \
-            --local-user "$GPG_KEY_ID" -o Release.gpg Release
-          gpg --batch --yes --pinentry-mode loopback --clearsign \
-            --local-user "$GPG_KEY_ID" -o InRelease Release
+          gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "$GPG_PASSPHRASE" \
+            -abs --local-user "$GPG_KEY_ID" -o Release.gpg Release
+          gpg --batch --yes --pinentry-mode loopback \
+            --passphrase "$GPG_PASSPHRASE" \
+            --clearsign --local-user "$GPG_KEY_ID" -o InRelease Release
 
           # Export public key for users
           gpg --armor --export "$GPG_KEY_ID" > KEY.gpg
