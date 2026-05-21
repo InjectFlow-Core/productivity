@@ -4,40 +4,40 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Thu, 21 May 2026 11:44:26 +0000
+Date: Thu, 21 May 2026 12:23:00 +0000
 Description: Daily Planner apt repository
 Label: Daily Planner
 Origin: Daily Planner
 Suite: stable
 MD5Sum:
- 2b2054be11df24cd02f1ab58a587b2cb              418 Packages
- 4d32593b25f9529fe377fc718d55a9a8              327 Packages.gz
- 39aec434d3716832bedfc91b4a951423              192 Release
+ aa6c5c170aa3f9724a995a63603bdc58              418 Packages
+ 0f3f8abe032a59e68b03a71d76e0386b              327 Packages.gz
+ 599ed5447c13798bd168c3299c133643              192 Release
 SHA1:
- 7fad16d52aa52debe04b68d8e65639e0b1b8742a              418 Packages
- bf1f455a7944915b7943c4750ef2535acaad5db7              327 Packages.gz
- d67b3c2a5328275e72baceff83d48923f6cab706              192 Release
+ 2ac254612bc0b06a333859e36af4c91182d5f5f9              418 Packages
+ 0ebb610aca924fcd452219040d9a426fca953fe7              327 Packages.gz
+ 9c947a7c9cb5fd0d25dc12a889b1d6358e58491a              192 Release
 SHA256:
- 58654ff6f0c4dd9d75af9465a80bc92fc547be1263cdb42c4e164915cc025aa0              418 Packages
- b4a5d5c12e0c322230b6168d7feca3a65b1fb36f8680d39c443a19d2733330ce              327 Packages.gz
- 0e469e2cd5bf91561229771071976392028a6d047b04a0fbf4b5b7cd7b528af3              192 Release
+ 9a56dcc51d1b6f44c2a0595dc62743eb96bc23cc3288ad6df9b77d815a07b70a              418 Packages
+ cbffecd38aed9627a2922fa816cb128914258b0205568164bf96b1a6f2f24d72              327 Packages.gz
+ e094d4088fed765913709df432b5ca88a3a2290a97b7c6959f5496bfd458fa02              192 Release
 SHA512:
- f4d0d646cc0ed37626cf137511565a1f3127eb9bc687241c8434e8f79147528efd9ddc91c789361bc5588655b36e29f326ef4eead81e4101692b5babef0efe88              418 Packages
- b268b3c59b61ee64cd2562807e177043c68bd2de771ede3d6e64da68927e77b9246e832d89df7d3a3f8584bfdb09aa02424493925ad4351c8c1833f0b3a05e94              327 Packages.gz
- 625ab6fef65f2b992fdc4e6f6ea2ca3a5b92b1f7ce09468fe69b549e61043fc57513791a79daf36be238341bb0076ec88dccbb6c16ca36eddf1fa7e1bccd3a7c              192 Release
+ b7e19321874b6ef9a75d91b2d55f438b7549ff87e5f8619b4036f4b682278e59ccbd1c855ea97fda7e890f6aa836163a5aa5c4831746314deb0138c757c62b34              418 Packages
+ 1ca9e0f1fbe91f3fdc61f5423e143158c7a2dd61d12096da88f2e6d54e89e2690ac5cab06115618318a1f7e3224004dcae5e19dddb811019a0d2fce150000011              327 Packages.gz
+ 19b3f8dc07916c7eec90118de9f4388df7077c6ec09dfc3d86d41a3fada55e242ffbe65a645d3ff80f8d84540877c3a33d8437f625da2c31c069270ff839d917              192 Release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEbpJpZYiYNNzmgIM1JFKxBbOQR1gFAmoO8BsACgkQJFKxBbOQ
-R1h+6Q/+OcJubPUtX9KNon9aZcvqyT3cutBKNRRVAYutq0ip858ksasqWZ2Z7LBP
-k+w80KRtiW8LjMLtokt2kXT4sBHrCOhJM6WcAHkO1nG4u9YiMNIIaI4xHHqW+oHq
-QD3bYXFUMlF+95yVg6LzVMQ4Nn5Vl5uOEYZk/rYw+7yALWr+x8MnoehV/jGJjNAy
-81K/7WTL6B71S4srT6lILTnir6TtL2QfbUuokuh84wcOHFu3THO+NK9XbiEz7jiX
-rJEr1+W6Gnir5Wj5GKulpcpUwgnhIsalKcFLxuDHC5ley1k4gmamPUk9U7gBGKOI
-6nhrOrfWeMXPvO/5dsvQgVSw/nvaFZDmhfhOxlq2ik1xbZYf9bE42cpXDrFosC9k
-QOt9o5uWTToUTTK023Q3dxqhqAXTLum8ebhRbirZt8tlt8AtJLWF0Ym7zKxGX/kP
-7nPnVNsFaNZ0JOUPblqo4EungOvuOZdSW07KZhgqEF7G86jKPssHUS8rb8L1m1DA
-4GpPYSLZ+3vAD8g5GTrDkjy6fpeMRP3BbEe2QxKD5jizBGfcLFCMQ10WTEa90Wdp
-vA2OEfOvtBUPlgG7B8QvIfW83At6QJUHPT51/aS/509LJW9ZDEgHs6covUaKTcV1
-aLlZ9AkDlsZlhLQG1MjdH8MVP4ekOfM/qRkm+70MOmU4G9xJPcw=
-=jlKq
+iQIzBAEBCgAdFiEEbpJpZYiYNNzmgIM1JFKxBbOQR1gFAmoO+SYACgkQJFKxBbOQ
+R1hPCA/+NY+378/yaqAJzG7b+FcnvQFqpqJ0AOTQFe8EeQ6IXKpAsYColRn4T1J4
+llRc1FT1tsuzXfuOQ6Rw07xp4ADMOFxzVrgfRCwkTo+6qxZ7IGehjoRnrA0vDMXk
+HfZ3iOjqIQSVosAqzeazEgBgrOIZwY1I7dCLfFqJWZhPRdLBlnhFKGyU/7UxH9yj
+22s1LvLlJza6pwzYFH6CelWO6rngQCSrX2WgAVo1WASL0nw0QqJ+nzeMBQcE9a6T
+Gq/WH6DeL020Ws3UWAO55frDTGfw2060aO61iJWuB8l9Oa6hW9/HONCDbZE/2k/g
+a32eETOlkIEcah6/SUGH6g9VvR+RhIwpHyMTjFbiYMqz0H4Y05B3qpRD8gZcws5J
+5oRfbS3nIp6AJOox1mK21X9Hbxeh3uzGHegKJKLWUAegsLojXNxfLuDKg4tjIAl7
+hQExtbaxNE/uFiMHeFxLIjB8uHRmm1AfbtAJfqGX9uK3TLVhUITtw0jT0VAaEa63
+bMnbUzsmuAt6oRzcybMiFUoujhUAD/vsjBOow/yCpG/qcZnSv4zxS6w4W5lwVHjM
+O789JqiSQIHIaapWH6Jvf+6mCsEAk5zn5CWO7KIjhsDAuPy4JPTHKI+6Rd62lqLR
+bLJNbCe91opjaS34UO1Z9XuDesUNMxxE6AEzMWFXDDZOBK1sclA=
+=mM63
 -----END PGP SIGNATURE-----
