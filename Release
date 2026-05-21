@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Thu, 21 May 2026 11:43:32 +0000
+Date: Thu, 21 May 2026 11:44:26 +0000
 Description: Daily Planner apt repository
 Label: Daily Planner
 Origin: Daily Planner
 Suite: stable
 MD5Sum:
- cf58b0c35edbddec3ef0bd7bb6a9c63c              418 Packages
- 1d73a44780b0a5e11db9fb3ca480200d              324 Packages.gz
- 931a4cfb332d98b8901a20d11c402971              192 Release
+ 2b2054be11df24cd02f1ab58a587b2cb              418 Packages
+ 4d32593b25f9529fe377fc718d55a9a8              327 Packages.gz
+ 39aec434d3716832bedfc91b4a951423              192 Release
 SHA1:
- bbb503db960aa80a7e55d50c83a4030df4ed559c              418 Packages
- 4d3230ce3cb36f496374b2b516346e3d62c87f0e              324 Packages.gz
- f3b4c48d11e5116e18014141249157ee948e4ac0              192 Release
+ 7fad16d52aa52debe04b68d8e65639e0b1b8742a              418 Packages
+ bf1f455a7944915b7943c4750ef2535acaad5db7              327 Packages.gz
+ d67b3c2a5328275e72baceff83d48923f6cab706              192 Release
 SHA256:
- 55bcf87412d4757f4ae9dc3e2db597d70c8ec026ddfe62ac23403e0f4b7f5a2f              418 Packages
- 86ace795b66211cc996736c3587ce2150503f821c3d76b3e971e04508abd72bb              324 Packages.gz
- ae2535dea986f8c7a2a338a32ac958740bbb750a1fc3a601dc8d621c40f24f99              192 Release
+ 58654ff6f0c4dd9d75af9465a80bc92fc547be1263cdb42c4e164915cc025aa0              418 Packages
+ b4a5d5c12e0c322230b6168d7feca3a65b1fb36f8680d39c443a19d2733330ce              327 Packages.gz
+ 0e469e2cd5bf91561229771071976392028a6d047b04a0fbf4b5b7cd7b528af3              192 Release
 SHA512:
- 488904fd66bdffef8b0a0ed6d0829d643211793ca51f12cffe13666f16f67fe7faae6c8391f21c587b0e2f75d06b1e5f78b2ef08d6eae3fdc5b039f8783df228              418 Packages
- cac6820d4c722135f5c5113da7059cd3a53dd7b4f7d9fa2c8c74cea4248a3ea2cf841efc10d44d3d56d6b4ddfbae11c7974fae703beb4ba61b29ed9350752b43              324 Packages.gz
- f4f685938b98c23f4eb17b83f6373e8d1d65fdb1483d6aabaafdffd05f4aa6142a37c6f546812afc1732e3ff497b601a46d3d515207e0a64e900c624b51c3a8e              192 Release
+ f4d0d646cc0ed37626cf137511565a1f3127eb9bc687241c8434e8f79147528efd9ddc91c789361bc5588655b36e29f326ef4eead81e4101692b5babef0efe88              418 Packages
+ b268b3c59b61ee64cd2562807e177043c68bd2de771ede3d6e64da68927e77b9246e832d89df7d3a3f8584bfdb09aa02424493925ad4351c8c1833f0b3a05e94              327 Packages.gz
+ 625ab6fef65f2b992fdc4e6f6ea2ca3a5b92b1f7ce09468fe69b549e61043fc57513791a79daf36be238341bb0076ec88dccbb6c16ca36eddf1fa7e1bccd3a7c              192 Release
