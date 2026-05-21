@@ -5,6 +5,7 @@ mod plan;
 use chrono::Local;
 use fs2::FileExt;
 use plan::{DayPlan, Priority};
+use std::path::PathBuf;
 use tauri::{LogicalSize, PhysicalPosition, WebviewWindow};
 
 // ── App mode ──────────────────────────────────────────────────────────────────
@@ -29,6 +30,14 @@ fn detect_mode() -> &'static str {
     } else {
         "morning"
     }
+}
+
+fn launch_request_path() -> PathBuf {
+    std::env::temp_dir().join("daily-planner-launch-request")
+}
+
+fn write_launch_request(mode: &str) {
+    let _ = std::fs::write(launch_request_path(), mode);
 }
 
 // ── Tauri commands ────────────────────────────────────────────────────────────
@@ -152,6 +161,15 @@ fn check_timers() -> bool {
 }
 
 #[tauri::command]
+fn consume_launch_request() -> Option<String> {
+    let path = launch_request_path();
+    let mode = std::fs::read_to_string(&path).ok()?;
+    let _ = std::fs::remove_file(path);
+    let mode = mode.trim();
+    matches!(mode, "morning" | "evening" | "dashboard" | "sticky").then(|| mode.to_string())
+}
+
+#[tauri::command]
 fn configure_sticky_window(window: WebviewWindow) -> Result<(), String> {
     let width = 360.0;
     let height = 520.0;
@@ -173,13 +191,18 @@ fn configure_sticky_window(window: WebviewWindow) -> Result<(), String> {
     } else {
         window.center().ok();
     }
+    window.show().ok();
+    window.set_focus().ok();
     Ok(())
 }
 
 #[tauri::command]
 fn configure_dashboard_window(window: WebviewWindow) -> Result<(), String> {
     window.set_always_on_top(false).ok();
-    window.set_fullscreen(true).map_err(|e| e.to_string())
+    window.set_fullscreen(true).map_err(|e| e.to_string())?;
+    window.show().ok();
+    window.set_focus().ok();
+    Ok(())
 }
 
 #[tauri::command]
@@ -193,6 +216,7 @@ pub fn run() {
     let lock_file = std::fs::File::create(std::env::temp_dir().join("daily-planner.lock"))
         .expect("could not create instance lock file");
     if lock_file.try_lock_exclusive().is_err() {
+        write_launch_request(detect_mode());
         eprintln!("[daily-planner] another instance is already running — exiting");
         std::process::exit(0);
     }
@@ -212,6 +236,7 @@ pub fn run() {
             save_settings,
             get_ai_review,
             check_timers,
+            consume_launch_request,
             configure_sticky_window,
             configure_dashboard_window,
             close_app,
