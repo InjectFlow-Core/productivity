@@ -95,11 +95,26 @@ src-tauri/target/release/daily-planner
 
 ## Install
 
+Install from the GitHub Pages APT repository:
+
+```bash
+curl -fsSL https://injectflow-core.github.io/productivity/KEY.gpg \
+  | sudo gpg --dearmor -o /usr/share/keyrings/daily-planner.gpg
+
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/daily-planner.gpg] https://injectflow-core.github.io/productivity ./" \
+  | sudo tee /etc/apt/sources.list.d/daily-planner.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install daily-planner
+```
+
+Or run the installer script:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/InjectFlow-Core/productivity/master/apt-install.sh | bash
 ```
 
-This adds the apt repository and installs the package. Future updates arrive via:
+The GitHub Pages root may show 404 because it is an APT repository, not a website. APT uses repository files such as `KEY.gpg`, `InRelease`, and `Packages.gz` from that URL. Future updates arrive via:
 
 ```bash
 sudo apt upgrade
