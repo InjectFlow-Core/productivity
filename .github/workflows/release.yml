@@ -43,6 +43,13 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      - name: Set release version from tag
+        run: |
+          export VERSION="${GITHUB_REF_NAME#v}"
+          npm version "$VERSION" --no-git-tag-version
+          node -e "const fs=require('fs'); const p='src-tauri/tauri.conf.json'; const j=JSON.parse(fs.readFileSync(p,'utf8')); j.version=process.env.VERSION; fs.writeFileSync(p, JSON.stringify(j,null,2)+'\n');"
+          perl -0pi -e "s/^version = \"[^\"]+\"/version = \"$VERSION\"/m" src-tauri/Cargo.toml
+
       - name: Build Tauri app (.deb)
         run: npm run build
 
