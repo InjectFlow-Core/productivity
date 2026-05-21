@@ -64,6 +64,10 @@ jobs:
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
           KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | head -1)
           echo "GPG_KEY_ID=$KEY_ID" >> $GITHUB_ENV
+          # Allow GPG to sign without a TTY in CI
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent
 
       - name: Build and push apt repository to gh-pages
         env:
@@ -106,9 +110,9 @@ jobs:
           CONF
           apt-ftparchive -c /tmp/apt.conf release . > Release
 
-          gpg --batch --yes -abs \
+          gpg --batch --yes --pinentry-mode loopback -abs \
             --local-user "$GPG_KEY_ID" -o Release.gpg Release
-          gpg --batch --yes --clearsign \
+          gpg --batch --yes --pinentry-mode loopback --clearsign \
             --local-user "$GPG_KEY_ID" -o InRelease Release
 
           # Export public key for users
