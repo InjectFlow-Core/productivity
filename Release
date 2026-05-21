@@ -1,0 +1,24 @@
+Architectures: amd64
+Codename: stable
+Components: main
+Date: Thu, 21 May 2026 11:17:45 +0000
+Description: Daily Planner apt repository
+Label: Daily Planner
+Origin: Daily Planner
+Suite: stable
+MD5Sum:
+ c7d16aaed487ea71f3d335372f9cebd5              418 Packages
+ 5f20ab35ba68f0de543c4f81a370fe0e              326 Packages.gz
+ 2d2b053df39239367ad0ef22a381520e              192 Release
+SHA1:
+ 755c7410fb6067e1d109f0bb7481906855f9e694              418 Packages
+ 57c377526d377eddcca40c8a5f8f16ed0f9eeb74              326 Packages.gz
+ a8abc46c97baf6e03fdabffa73976b1fbcae9e0d              192 Release
+SHA256:
+ d3144f519338ba1b83cc707b9c9ec0b5f906e671bc11f5940baf4494e4d25d63              418 Packages
+ ceb7370b1265fba8c6417f09067098e4ed58334b035038d3a9aa90dfe40c3c65              326 Packages.gz
+ 5080a645f32550e1a5045bcf2205355edd55446d0eada64b38a071913c0df2e0              192 Release
+SHA512:
+ dde247ec696280667eb69ba5ba0c065af79c3a88465bb4b082dea124ca447520bf1fb5daf82e12b8d6facf389b19c39551bfbf3243bcf760c94f16f753992ff4              418 Packages
+ 6278ff757aea9f5f7271028a20880265a7ecc921b1ac14fd98c95fa9c63a0161a60ae2fb6c67779021dc71ccd428fe7a2b7da75a012aee545ef6d1af30367ecd              326 Packages.gz
+ 9575bc87a83ff61cbf0bcc00ea40304c7ffa87c3a8c419d36eed036367b8ce2078ee1134529127ea7a8b51ff65cce4321a855bc05c1c81242bfd86ff64c99278              192 Release

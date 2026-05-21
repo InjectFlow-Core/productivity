@@ -1,0 +1,15 @@
+Package: daily-planner
+Version: 0.1.0
+Architecture: amd64
+Maintainer: dailyplanner
+Installed-Size: 4349
+Depends: libwebkit2gtk-4.1-0, libgtk-3-0
+Filename: pool/main/daily-planner_0.1.0_amd64.deb
+Size: 1970890
+MD5sum: 100ad98c4b12533b9f0c2b6053ed3959
+SHA1: a5793544e49979ef77a2e8fd922d99f24f88a07b
+SHA256: 7e07f0b766bbaa41ade79ccc6085c839651a4b87ab789766c593c5a19f1c01f2
+Priority: optional
+Description: (none)
+ (none)
+
