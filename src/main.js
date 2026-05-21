@@ -47,7 +47,17 @@ async function startMorningLock() {
   const carryoverList = document.getElementById('carryover-list');
   const taskGroups = document.getElementById('task-groups');
   const submitBtn  = document.getElementById('morning-btn');
+  const catPicker = document.getElementById('cat-picker');
+  const morningForm = document.getElementById('morning-form');
+  const err = document.getElementById('morning-error');
 
+  morningForm.reset();
+  err.hidden = true;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Start My Day';
+  carryoverList.innerHTML = '';
+  taskGroups.innerHTML = '';
+  document.querySelectorAll('.cat-pill').forEach((p) => p.classList.toggle('active', p.dataset.cat === activeCat));
   taskInput.focus();
 
   try {
@@ -57,13 +67,13 @@ async function startMorningLock() {
   }
 
   // Category picker
-  document.getElementById('cat-picker').addEventListener('click', (e) => {
+  catPicker.onclick = (e) => {
     const pill = e.target.closest('.cat-pill');
     if (!pill) return;
     activeCat = pill.dataset.cat;
     document.querySelectorAll('.cat-pill').forEach((p) => p.classList.toggle('active', p === pill));
     taskInput.focus();
-  });
+  };
 
   function selectedCarryovers() {
     return carryovers.filter((task) => task.selected);
@@ -161,17 +171,16 @@ async function startMorningLock() {
     taskInput.focus();
   }
 
-  addTaskBtn.addEventListener('click', addTask);
-  taskInput.addEventListener('keydown', (e) => {
+  addTaskBtn.onclick = addTask;
+  taskInput.onkeydown = (e) => {
     if (e.key === 'Enter') { e.preventDefault(); addTask(); }
-  });
+  };
   renderCarryovers();
   renderTasks();
 
-  document.getElementById('morning-form').addEventListener('submit', async (e) => {
+  morningForm.onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('morning-btn');
-    const err = document.getElementById('morning-error');
     addTask();
 
     err.hidden = true;
@@ -204,7 +213,7 @@ async function startMorningLock() {
       btn.disabled = false;
       btn.textContent = 'Start My Day';
     }
-  });
+  };
 }
 
 // ── Evening lock ──────────────────────────────────────────────────────────────
@@ -216,6 +225,7 @@ function startEveningLock(plan) {
   document.getElementById('evening-intention').textContent = plan.intention || "Review today's priorities.";
 
   const container = document.getElementById('evening-priorities');
+  container.innerHTML = '';
 
   const grouped = CATS.map(({ id, label }) => ({
     id, label,
@@ -250,7 +260,7 @@ function startEveningLock(plan) {
     });
   });
 
-  document.getElementById('evening-form').addEventListener('submit', async (e) => {
+  document.getElementById('evening-form').onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('evening-btn');
     const err = document.getElementById('evening-error');
@@ -270,7 +280,7 @@ function startEveningLock(plan) {
       btn.disabled = false;
       btn.textContent = 'End My Day';
     }
-  });
+  };
 }
 
 // ── Today sticky ──────────────────────────────────────────────────────────────
@@ -592,10 +602,8 @@ function escHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
-
-try {
-  const { mode, today_plan: todayPlan } = await invoke('get_app_state');
+async function showMode(mode) {
+  const todayPlan = await invoke('get_today_plan');
 
   if (mode === 'sticky') {
     await invoke('configure_sticky_window');
@@ -606,15 +614,37 @@ try {
     showView('sticky');
     startSticky();
   } else if (mode === 'morning') {
+    await invoke('configure_dashboard_window');
     showView('morning-lock');
     await startMorningLock();
   } else if (mode === 'evening' && todayPlan && !todayPlan.reviewed_at) {
+    await invoke('configure_dashboard_window');
     showView('evening-lock');
     startEveningLock(todayPlan);
   } else {
+    await invoke('configure_dashboard_window');
     showView('dashboard');
     loadDashboard();
   }
+}
+
+function startLaunchRequestPolling() {
+  setInterval(async () => {
+    try {
+      const mode = await invoke('consume_launch_request');
+      if (mode) await showMode(mode);
+    } catch (err) {
+      console.error(err);
+    }
+  }, 1000);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+try {
+  const { mode } = await invoke('get_app_state');
+  await showMode(mode);
+  startLaunchRequestPolling();
 } catch (err) {
   document.body.innerHTML = `<div style="padding:2rem;color:#f87171;font-family:monospace">
     <strong>Failed to start:</strong><br>${escHtml(String(err))}
