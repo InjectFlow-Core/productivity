@@ -1,4 +1,14 @@
-# Daily Planner
+<p align="center">
+  <img src="src-tauri/icons/icon.png" alt="Daily Planner logo" width="96" height="96">
+</p>
+
+<h1 align="center">Daily Planner</h1>
+
+<p align="center">
+  <a href="https://github.com/InjectFlow-Core/daily-planner/actions/workflows/release.yml">
+    <img src="https://github.com/InjectFlow-Core/daily-planner/actions/workflows/release.yml/badge.svg" alt="Release status">
+  </a>
+</p>
 
 A Tauri desktop app for Linux that opens at scheduled times to help you plan your morning and review your evening.
 
@@ -98,10 +108,10 @@ src-tauri/target/release/daily-planner
 Install from the GitHub Pages APT repository:
 
 ```bash
-curl -fsSL https://injectflow-core.github.io/productivity/KEY.gpg \
+curl -fsSL https://injectflow-core.github.io/daily-planner/KEY.gpg \
   | sudo gpg --dearmor -o /usr/share/keyrings/daily-planner.gpg
 
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/daily-planner.gpg] https://injectflow-core.github.io/productivity ./" \
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/daily-planner.gpg] https://injectflow-core.github.io/daily-planner ./" \
   | sudo tee /etc/apt/sources.list.d/daily-planner.list > /dev/null
 
 sudo apt-get update
@@ -111,7 +121,7 @@ sudo apt-get install daily-planner
 Or run the installer script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/InjectFlow-Core/productivity/master/apt-install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/InjectFlow-Core/daily-planner/master/apt-install.sh | bash
 ```
 
 The GitHub Pages root may show 404 because it is an APT repository, not a website. APT uses repository files such as `KEY.gpg`, `InRelease`, and `Packages.gz` from that URL. Future updates arrive via:
