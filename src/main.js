@@ -10,14 +10,26 @@ function showView(id) {
 
 // ── Clock (shared) ────────────────────────────────────────────────────────────
 
+const clockIntervals = new Map();
+
+function stopClocks() {
+  for (const interval of clockIntervals.values()) clearInterval(interval);
+  clockIntervals.clear();
+}
+
 function startClock(clockId, dateId) {
+  const existing = clockIntervals.get(clockId);
+  if (existing) clearInterval(existing);
+
   invoke('get_current_time').then((t) => { document.getElementById(clockId).textContent = t; });
   invoke('get_today_date').then((d) => {
     document.getElementById(dateId).textContent = new Date(d + 'T00:00:00').toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     });
   });
-  setInterval(() => invoke('get_current_time').then((t) => { document.getElementById(clockId).textContent = t; }), 10000);
+  clockIntervals.set(clockId, setInterval(() => {
+    invoke('get_current_time').then((t) => { document.getElementById(clockId).textContent = t; });
+  }, 10000));
 }
 
 // ── Morning lock ──────────────────────────────────────────────────────────────
@@ -35,6 +47,12 @@ function catMeta(id) {
 
 async function startMorningLock() {
   startClock('clock', 'date');
+  const today = await invoke('get_today_date');
+  if (startMorningLock.bootedDate === today) {
+    document.getElementById('task-input').focus();
+    return;
+  }
+  startMorningLock.bootedDate = today;
 
   // tasks = [{ text, category }]
   const tasks = [];
@@ -604,6 +622,8 @@ function escHtml(str) {
 
 async function showMode(mode) {
   const todayPlan = await invoke('get_today_plan');
+
+  stopClocks();
 
   if (mode === 'sticky') {
     await invoke('configure_sticky_window');
