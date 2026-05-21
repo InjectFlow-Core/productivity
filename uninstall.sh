@@ -4,6 +4,7 @@ set -e
 BINARY_DEST="$HOME/.local/bin/daily-planner"
 SYSTEMD_DIR="$HOME/.config/systemd/user"
 DESKTOP_FILE="$HOME/.local/share/applications/daily-planner.desktop"
+STICKY_DESKTOP_FILE="$HOME/.local/share/applications/daily-planner-sticky.desktop"
 ICON_DEST="$HOME/.local/share/icons/daily-planner.png"
 
 UNITS=(
@@ -27,6 +28,7 @@ rm -f "$BINARY_DEST"
 
 echo "==> Removing .desktop entry and icon"
 rm -f "$DESKTOP_FILE"
+rm -f "$STICKY_DESKTOP_FILE"
 rm -f "$ICON_DEST"
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
