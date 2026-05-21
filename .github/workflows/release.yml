@@ -1,0 +1,122 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            dpkg-dev \
+            apt-utils \
+            gnupg
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build Tauri app (.deb)
+        run: npm run build
+
+      - name: Find .deb artifact
+        id: deb
+        run: |
+          DEB=$(find src-tauri/target/release/bundle/deb -name "*.deb" | head -1)
+          echo "path=$DEB" >> $GITHUB_OUTPUT
+          echo "name=$(basename $DEB)" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.deb.outputs.path }}
+          generate_release_notes: true
+
+      - name: Import GPG signing key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+          KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | head -1)
+          echo "GPG_KEY_ID=$KEY_ID" >> $GITHUB_ENV
+
+      - name: Build and push apt repository to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APT_DIR="$(pwd)/apt-repo"
+
+          # Reuse existing gh-pages content so old .deb versions are preserved
+          git clone --depth=1 --branch gh-pages \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "$APT_DIR" 2>/dev/null || {
+            mkdir -p "$APT_DIR"
+            git -C "$APT_DIR" init
+            git -C "$APT_DIR" checkout -b gh-pages
+            git -C "$APT_DIR" remote add origin \
+              "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          }
+
+          # Add new .deb to the pool
+          mkdir -p "$APT_DIR/pool/main"
+          cp "${{ steps.deb.outputs.path }}" "$APT_DIR/pool/main/"
+
+          cd "$APT_DIR"
+
+          # Generate Packages index
+          dpkg-scanpackages --arch amd64 pool/main > Packages
+          gzip -k -f Packages
+
+          # Generate signed Release file
+          cat > /tmp/apt.conf << 'CONF'
+          APT::FTPArchive::Release {
+            Origin "Daily Planner";
+            Label "Daily Planner";
+            Suite "stable";
+            Codename "stable";
+            Architectures "amd64";
+            Components "main";
+            Description "Daily Planner apt repository";
+          };
+          CONF
+          apt-ftparchive -c /tmp/apt.conf release . > Release
+
+          gpg --batch --yes -abs \
+            --local-user "$GPG_KEY_ID" -o Release.gpg Release
+          gpg --batch --yes --clearsign \
+            --local-user "$GPG_KEY_ID" -o InRelease Release
+
+          # Export public key for users
+          gpg --armor --export "$GPG_KEY_ID" > KEY.gpg
+
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "apt repo: ${{ github.ref_name }}" || true
+          git push origin gh-pages
