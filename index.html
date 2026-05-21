@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Planner</title>
+  <meta name="description" content="Daily Planner is a Linux desktop app for planning your morning, reviewing your evening, and keeping today's tasks visible.">
+  <link rel="icon" href="icon.png" type="image/png">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #16212a;
+      --muted: #5d6975;
+      --line: #d9e0e7;
+      --paper: #f7fafc;
+      --white: #ffffff;
+      --teal: #0d7280;
+      --green: #10a37f;
+      --red: #e85d52;
+      --gold: #e8b653;
+      --code: #102a37;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+    }
+    a { color: var(--teal); text-decoration-thickness: 0.08em; text-underline-offset: 0.18em; }
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(rgba(247,250,252,0.88), rgba(247,250,252,0.96)),
+        radial-gradient(circle at 78% 18%, rgba(232,182,83,0.22), transparent 30%),
+        linear-gradient(135deg, #f7fafc 0%, #e8f3f5 100%);
+    }
+    .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; padding: 64px 0; }
+    .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; font-weight: 700; }
+    .brand img { width: 48px; height: 48px; border-radius: 12px; }
+    h1 { font-size: clamp(42px, 7vw, 82px); line-height: 0.95; margin: 0 0 24px; letter-spacing: 0; }
+    .lead { font-size: 21px; max-width: 650px; color: var(--muted); margin: 0 0 34px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid var(--teal);
+      border-radius: 8px;
+      background: var(--teal);
+      color: white;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .button.secondary { background: transparent; color: var(--teal); }
+    .app-shot {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 22px 60px rgba(25, 48, 58, 0.16);
+      overflow: hidden;
+    }
+    .shot-bar { display: flex; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--line); background: #eef5f6; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--red); }
+    .dot:nth-child(2) { background: var(--gold); }
+    .dot:nth-child(3) { background: var(--green); }
+    .shot-body { padding: 28px; }
+    .date { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+    .task { display: grid; grid-template-columns: 20px 1fr; gap: 12px; align-items: center; padding: 13px 0; border-bottom: 1px solid #edf1f4; }
+    .check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--green); position: relative; }
+    .task.done .check::after { content: ""; position: absolute; left: 4px; top: 1px; width: 8px; height: 12px; border: solid var(--green); border-width: 0 3px 3px 0; transform: rotate(45deg); }
+    .tag { display: inline-flex; width: max-content; margin-top: 18px; padding: 6px 10px; border-radius: 8px; background: #f7ead0; color: #7a5516; font-size: 13px; font-weight: 700; }
+    section { padding: 72px 0; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 34px; line-height: 1.1; margin: 0 0 16px; letter-spacing: 0; }
+    .section-lead { color: var(--muted); max-width: 720px; margin: 0 0 34px; font-size: 18px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { background: var(--white); border: 1px solid var(--line); border-radius: 8px; padding: 22px; }
+    .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); }
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow-x: auto;
+      border-radius: 8px;
+      background: var(--code);
+      color: #e6f3f6;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    .note { color: var(--muted); margin-top: 14px; }
+    footer { padding: 32px 0; color: var(--muted); }
+    @media (max-width: 800px) {
+      .hero { min-height: auto; }
+      .hero-grid, .split, .grid { grid-template-columns: 1fr; }
+      .hero-grid { gap: 34px; padding: 40px 0; }
+      .wrap { width: min(100% - 28px, 1080px); }
+      h1 { font-size: 46px; }
+      .lead { font-size: 18px; }
+      section { padding: 48px 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="brand"><img src="icon.png" alt="Daily Planner logo"><span>Daily Planner</span></div>
+        <h1>Plan the day before it starts.</h1>
+        <p class="lead">A Linux desktop planner that opens at scheduled times for morning planning, evening review, and a compact sticky task window during the day.</p>
+        <div class="actions">
+          <a class="button" href="#install">Install</a>
+          <a class="button secondary" href="https://github.com/InjectFlow-Core/daily-planner">View source</a>
+        </div>
+      </div>
+      <div class="app-shot" aria-label="Daily Planner interface preview">
+        <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="shot-body">
+          <div class="date">Today - Morning plan</div>
+          <h2>Focus on the work that matters.</h2>
+          <div class="task done"><span class="check"></span><span>Write the plan before opening everything else</span></div>
+          <div class="task"><span class="check"></span><span>Keep today's priorities visible</span></div>
+          <div class="task"><span class="check"></span><span>Review what actually got done</span></div>
+          <span class="tag">Always-on-top sticky view</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="wrap">
+        <h2>What It Does</h2>
+        <p class="section-lead">Daily Planner is intentionally small and opinionated: it interrupts at the right moments, stores plain daily records, and keeps unfinished work visible.</p>
+        <div class="grid">
+          <article class="card"><h3>Morning Plan</h3><p>Opens fullscreen at the configured morning time when there is no plan for today.</p></article>
+          <article class="card"><h3>Sticky Tasks</h3><p>Shows today's tasks in a compact always-on-top window with live checkboxes.</p></article>
+          <article class="card"><h3>Evening Review</h3><p>Opens at the configured evening time so you can mark progress and add notes.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <div class="wrap split">
+        <div>
+          <h2>Install on Linux</h2>
+          <p class="section-lead">This page also hosts the APT repository. The root is documentation; APT uses files like <code>InRelease</code>, <code>Packages.gz</code>, and <code>KEY.gpg</code>.</p>
+        </div>
+        <pre><code>curl -fsSL https://raw.githubusercontent.com/InjectFlow-Core/daily-planner/master/apt-install.sh | bash</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap split">
+        <div>
+          <h2>APT Repository</h2>
+          <p class="section-lead">For manual setup, add the GitHub Pages repository directly and install the package with APT.</p>
+        </div>
+        <pre><code>curl -fsSL https://injectflow-core.github.io/daily-planner/KEY.gpg \
+  | sudo gpg --dearmor -o /usr/share/keyrings/daily-planner.gpg
+
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/daily-planner.gpg] https://injectflow-core.github.io/daily-planner ./" \
+  | sudo tee /etc/apt/sources.list.d/daily-planner.list &gt; /dev/null
+
+sudo apt-get update
+sudo apt-get install daily-planner</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">Daily Planner is published from <a href="https://github.com/InjectFlow-Core/daily-planner">InjectFlow-Core/daily-planner</a>.</div>
+  </footer>
+</body>
+</html>
